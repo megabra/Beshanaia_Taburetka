@@ -8,10 +8,10 @@ public:
 	void SetInfo(void);
 	void GetInfo(void);
 	bool CheckController(void);
-	int LY;
-	int LX;
-	int RY;
-	int RX;
+	int ly;
+	int lx;
+	int ry;
+	int rx;
 private:
 	int deadzone(int val);
 };

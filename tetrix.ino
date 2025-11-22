@@ -1,10 +1,9 @@
-#include <TELEOP.h> // ps4 controller lib
+//#include <TELEOP.h> // ps4 controller lib
 #include <PRIZM.h> // tetrix 
 #include "include/ControllerStick.h"
 #include "include/Auto1.h"
 
 PRIZM prizm;
-PS4 ps4;
 
 controller controller1;
 
@@ -22,8 +21,8 @@ void loop()
     controller1.SetInfo(); //set controller info
     controller1.GetInfo(); //print controller info
 
-    prizm.setMotorPower(1,controller.LY);
-    prizm.setMotorPower(2,controller.LY);
+    prizm.setMotorPower(1, controller1.ly);
+    prizm.setMotorPower(2, controller1.ly);
   }
   
 }
