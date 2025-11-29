@@ -4,8 +4,9 @@
 #include "include/Auto1.h"
 
 PRIZM prizm;
+EXPANSION exc;
 
-controller controller1;
+controller dsh;
 
 void setup()
 {
@@ -16,13 +17,18 @@ void setup()
 
 void loop()
 {
-  if (controller1.CheckController())
+  if (dsh.CheckController())
   {
-    controller1.SetInfo(); //set controller info
-    controller1.GetInfo(); //print controller info
+    dsh.SetInfo(); //set controller info
+    dsh.GetInfo(); //print controller info
 
-    prizm.setMotorPower(1, controller1.ly);
-    prizm.setMotorPower(2, controller1.ly);
+    exc.setMotorPowers(3, dsh.ML1, dsh.ML2); 
+    exc.setMotorPowers(1, dsh.MR1, dsh.MR2);
+  }
+  else
+  {
+    exc.setMotorPowers(3, 0, 0);
+    exc.setMotorPowers(1, 0, 0);
   }
   
 }

@@ -7,9 +7,9 @@ int controller::deadzone(int val) // deadzone for controller
 {
 	const uint8_t zone = 20;
 	if (val <= (128 - zone) || val >= (128 + zone))
-		return val -= 128;
+		return val - 128;
 	else
-		return val = 0;
+		return 0;
 }
 
 void controller::SetInfo() // Set info
@@ -18,6 +18,16 @@ void controller::SetInfo() // Set info
 	lx = deadzone(ps4.Stick(LX));
 	ry = deadzone(ps4.Stick(RY));
 	rx = deadzone(ps4.Stick(RX));
+
+	KofL1R2 = sin(AngleToRad()) + cos(AngleToRad());
+	KofL2R1 = sin(AngleToRad()) - cos(AngleToRad());
+
+	GlobalKof = sqrt((lx*lx)+(ly*ly)) / 128;
+	
+	ML1 = KofL1R2 * GlobalKof;
+	MR2 = ML1;
+	ML2 = KofL2R1 * GlobalKof;
+	MR1 = ML2;
 }
 
 void controller::GetInfo() // print info
@@ -25,11 +35,30 @@ void controller::GetInfo() // print info
 	Serial.print("LX  =  ");
 	Serial.print(lx);
 	Serial.print("\tLY  =  ");
-	Serial.println(ly);
-	Serial.print("RX  =  ");
+	Serial.print(ly);
+	Serial.print("\tRX  =  ");
 	Serial.print(rx);
 	Serial.print("\tRY  =  ");
-	Serial.println(ry);
+	Serial.print(ry);
+	Serial.print("\tML1  =  ");
+        Serial.print(ML1);
+        Serial.print("\tML2  =  ");
+        Serial.print(ML2);
+        Serial.print("\tMR1  =  ");
+        Serial.print(MR1);
+        Serial.print("\tMR2  =  ");
+        Serial.print(MR2);
+	Serial.print("\tK1  =  ");
+        Serial.print(sin(AngleToRad()));
+        Serial.print("\tK2  =  ");
+        Serial.print(cos(AngleToRad()));
+        Serial.print("\tGK  =  ");
+        Serial.println(AngleToRad());
+}
+
+double controller::AngleToRad()
+{
+	return ps4.Angle(PITCH) * M_PI / 180;
 }
 
 bool controller::CheckController(void) // checking controller

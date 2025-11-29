@@ -1,6 +1,8 @@
 #pragma once
 #include <Arduino.h>
 #include <TELEOP.h>
+#include <math.h>
+
 
 class controller
 {
@@ -8,10 +10,18 @@ public:
 	void SetInfo(void);
 	void GetInfo(void);
 	bool CheckController(void);
+	int ML1;
+	int ML2;
+	int MR1;
+	int MR2;
+private:
+	int deadzone(int val);
+	double AngleToRad();
 	int ly;
 	int lx;
 	int ry;
 	int rx;
-private:
-	int deadzone(int val);
+	double KofL1R2;
+	double KofL2R1;
+	double GlobalKof;
 };
