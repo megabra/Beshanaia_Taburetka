@@ -58,7 +58,7 @@ void controller::GetInfo() // print info
 
 double controller::AngleToRad()
 {
-	return ps4.Angle(PITCH) * M_PI / 180;
+	return ps4.Angle(ROLL) * M_PI / 180;
 }
 
 bool controller::CheckController(void) // checking controller
