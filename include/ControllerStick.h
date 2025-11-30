@@ -16,12 +16,10 @@ public:
 	int MR2;
 private:
 	int deadzone(int val);
-	double AngleToRad();
 	int ly;
 	int lx;
 	int ry;
 	int rx;
-	double KofL1R2;
-	double KofL2R1;
-	double GlobalKof;
+	double KofL1R2 = 0;
+	double KofL2R1 = 0;
 };

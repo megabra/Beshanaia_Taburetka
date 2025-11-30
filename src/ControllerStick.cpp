@@ -18,16 +18,30 @@ void controller::SetInfo() // Set info
 	lx = deadzone(ps4.Stick(LX));
 	ry = deadzone(ps4.Stick(RY));
 	rx = deadzone(ps4.Stick(RX));
-
-	KofL1R2 = sin(AngleToRad()) + cos(AngleToRad());
-	KofL2R1 = sin(AngleToRad()) - cos(AngleToRad());
-
-	GlobalKof = sqrt((lx*lx)+(ly*ly)) / 128;
 	
-	ML1 = KofL1R2 * GlobalKof;
-	MR2 = ML1;
-	ML2 = KofL2R1 * GlobalKof;
-	MR1 = ML2;
+	double hypo = sqrt((lx*lx)+(ly*ly));
+	
+	if (hypo != 0)
+	{
+		double sin2 = ((ly / hypo)>=0) ? (ly / hypo)*(ly / hypo) : (ly / hypo)*(ly / hypo)*-1;
+		double cos2 = ((lx / hypo)>=0) ? (lx / hypo)*(lx / hypo) : (lx / hypo)*(lx / hypo)*-1;
+		KofL1R2 =sin2+cos2; 
+		KofL2R1 =sin2-cos2;
+	
+		ML1 = KofL1R2 * hypo;
+        	MR2 = ML1;
+        	ML2 = KofL2R1 * hypo;
+        	MR1 = ML2;
+	}
+	else 
+	{
+		KofL1R2 = 0;
+		KofL2R1 = 0;
+
+		ML1 = ML2 = MR1 = MR2 = 0;
+	}
+
+	// GlobalKof = hypo / 128;
 }
 
 void controller::GetInfo() // print info
@@ -49,16 +63,11 @@ void controller::GetInfo() // print info
         Serial.print("\tMR2  =  ");
         Serial.print(MR2);
 	Serial.print("\tK1  =  ");
-        Serial.print(sin(AngleToRad()));
+        Serial.print(KofL1R2);
         Serial.print("\tK2  =  ");
-        Serial.print(cos(AngleToRad()));
-        Serial.print("\tGK  =  ");
-        Serial.println(AngleToRad());
-}
-
-double controller::AngleToRad()
-{
-	return ps4.Angle(ROLL) * M_PI / 180;
+        Serial.print(KofL2R1);
+        //Serial.print("\tGK  =  ");
+        //Serial.println(hypo);
 }
 
 bool controller::CheckController(void) // checking controller
