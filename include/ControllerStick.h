@@ -22,4 +22,5 @@ private:
 	int rx;
 	double KofL1R2 = 0;
 	double KofL2R1 = 0;
+	double GlobalKof = 0;
 };

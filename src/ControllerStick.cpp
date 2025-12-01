@@ -19,7 +19,7 @@ void controller::SetInfo() // Set info
 	ry = deadzone(ps4.Stick(RY));
 	rx = deadzone(ps4.Stick(RX));
 	
-	double hypo = sqrt((lx*lx)+(ly*ly));
+	double hypo = (sqrt((lx*lx)+(ly*ly)) > 128) ? 128 : sqrt((lx*lx)+(ly*ly));
 	
 	if (hypo != 0)
 	{
@@ -28,9 +28,9 @@ void controller::SetInfo() // Set info
 		KofL1R2 =sin2+cos2; 
 		KofL2R1 =sin2-cos2;
 	
-		ML1 = KofL1R2 * hypo;
+		ML1 = ((KofL1R2 * GlobalKof) > 720) ? 720 : ((KofL1R2 * GlobalKof) < -720) ? -720 : KofL1R2 * GlobalKof;
         	MR2 = ML1;
-        	ML2 = KofL2R1 * hypo;
+        	ML2 = ((KofL2R1 * GlobalKof) > 720) ? 720 : ((KofL2R1 * GlobalKof) < -720) ? -720 : KofL2R1 * GlobalKof;
         	MR1 = ML2;
 	}
 	else 
@@ -41,7 +41,7 @@ void controller::SetInfo() // Set info
 		ML1 = ML2 = MR1 = MR2 = 0;
 	}
 
-	// GlobalKof = hypo / 128;
+	 GlobalKof = hypo / 128 * 720;
 }
 
 void controller::GetInfo() // print info
@@ -66,8 +66,8 @@ void controller::GetInfo() // print info
         Serial.print(KofL1R2);
         Serial.print("\tK2  =  ");
         Serial.print(KofL2R1);
-        //Serial.print("\tGK  =  ");
-        //Serial.println(hypo);
+        Serial.print("\tGK  =  ");
+        Serial.println(GlobalKof);
 }
 
 bool controller::CheckController(void) // checking controller

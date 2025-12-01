@@ -10,7 +10,7 @@ controller dsh;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(250000);
   Serial.println("Start");
   prizm.PrizmBegin();
 }
@@ -22,13 +22,19 @@ void loop()
     dsh.SetInfo(); //set controller info
     dsh.GetInfo(); //print controller info
 
-    exc.setMotorPowers(3, dsh.ML1, dsh.ML2); 
-    exc.setMotorPowers(1, dsh.MR1, dsh.MR2);
+    exc.setMotorSpeeds(3, (dsh.ML1 * -1), (dsh.ML2 * -1)); 
+    exc.setMotorSpeeds(1, (dsh.MR1 * -1), (dsh.MR2 * -1));
+    //exc.setMotorPowers(3, (dsh.ML1 * -1), (dsh.ML2 * -1)); 
+    //exc.setMotorPowers(1, (dsh.MR1 * -1), (dsh.MR2 * -1));
+    
   }
   else
   {
-    exc.setMotorPowers(3, 0, 0);
-    exc.setMotorPowers(1, 0, 0);
+    exc.setMotorSpeeds(3, 0, 0);
+    exc.setMotorSpeeds(1, 0, 0);
+    
+    //exc.setMotorPowers(3, 0, 0);
+    //exc.setMotorPowers(1, 0, 0);
   }
   
 }
