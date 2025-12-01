@@ -16,32 +16,54 @@ void controller::SetInfo() // Set info
 {
 	ly = deadzone(ps4.Stick(LY));
 	lx = deadzone(ps4.Stick(LX));
-	ry = deadzone(ps4.Stick(RY));
+	//ry = deadzone(ps4.Stick(RY));
 	rx = deadzone(ps4.Stick(RX));
 	
+	/////////////////For wheels//////////////////
 	double hypo = (sqrt((lx*lx)+(ly*ly)) > 128) ? 128 : sqrt((lx*lx)+(ly*ly));
 	
-	if (hypo != 0)
+	GlobalKof = hypo / 128 * 720;
+
+	Rotate = rx / 128;
+
+	if (hypo != 0 && Rotate != 0)
 	{
-		double sin2 = ((ly / hypo)>=0) ? (ly / hypo)*(ly / hypo) : (ly / hypo)*(ly / hypo)*-1;
-		double cos2 = ((lx / hypo)>=0) ? (lx / hypo)*(lx / hypo) : (lx / hypo)*(lx / hypo)*-1;
-		KofL1R2 =sin2+cos2; 
-		KofL2R1 =sin2-cos2;
+		if (hypo != 0)
+		{
+			double sin2 = ((ly / hypo)>=0) ? (ly / hypo)*(ly / hypo) : (ly / hypo)*(ly / hypo)*-1;
+			double cos2 = ((lx / hypo)>=0) ? (lx / hypo)*(lx / hypo) : (lx / hypo)*(lx / hypo)*-1;
+			
+			KofL1R2 =sin2+cos2; 
+			KofL2R1 =sin2-cos2;
+		}
+		else
+		{
+			KofL1R2 = 0;
+                        KofL2R1 = 0;
+		}
+
+		int RawL1 = (KofL1R2 + Rotate) * GlobalKof;
+		int RawR2 = (KofL1R2 - Rotate) * GlobalKof;
+		int RawL2 = (KofL2R1 + Rotate) * GlobalKof;
+		int RawR1 = (KofL2R1 - Rotate) * GlobalKof;
 	
-		ML1 = ((KofL1R2 * GlobalKof) > 720) ? 720 : ((KofL1R2 * GlobalKof) < -720) ? -720 : KofL1R2 * GlobalKof;
-        	MR2 = ML1;
-        	ML2 = ((KofL2R1 * GlobalKof) > 720) ? 720 : ((KofL2R1 * GlobalKof) < -720) ? -720 : KofL2R1 * GlobalKof;
-        	MR1 = ML2;
+		ML1 = (RawL1 > 720) ? 720 : (RawL1 < -720) ? -720 : RawL1;
+        	MR2 = (RawR2 > 720) ? 720 : (RawR2 < -720) ? -720 : RawR2;
+        	ML2 = (RawL2 > 720) ? 720 : (RawL2 < -720) ? -720 : RawL2;
+        	MR1 = (RawR1 > 720) ? 720 : (RawR1 < -720) ? -720 : RawR1;
 	}
 	else 
 	{
 		KofL1R2 = 0;
-		KofL2R1 = 0;
+                KofL2R1 = 0;
 
 		ML1 = ML2 = MR1 = MR2 = 0;
 	}
-
-	 GlobalKof = hypo / 128 * 720;
+	//L1 = (Sin * |Sin| + Cos * |Cos| + rotation (max=1, min=-1)) * MaxMotorVal
+	//L2 = (Sin * |Sin| - Cos * |Cos| + rotation (max=1, min=-1)) * MaxMotorVal
+	//R1 = (Sin * |Sin| - Cos * |Cos| - rotation (max=1, min=-1)) * MaxMotorVal
+	//R2 = (Sin * |Sin| + Cos * |Cos| - rotation (max=1, min=-1)) * MaxMotorVal
+	/////////////////////////////////////////////
 }
 
 void controller::GetInfo() // print info
@@ -52,8 +74,8 @@ void controller::GetInfo() // print info
 	Serial.print(ly);
 	Serial.print("\tRX  =  ");
 	Serial.print(rx);
-	Serial.print("\tRY  =  ");
-	Serial.print(ry);
+	//Serial.print("\tRY  =  ");
+	//Serial.print(ry);
 	Serial.print("\tML1  =  ");
         Serial.print(ML1);
         Serial.print("\tML2  =  ");
@@ -66,8 +88,11 @@ void controller::GetInfo() // print info
         Serial.print(KofL1R2);
         Serial.print("\tK2  =  ");
         Serial.print(KofL2R1);
+	Serial.print("\tRT  =  ");
+	Serial.print(Rotate);
         Serial.print("\tGK  =  ");
-        Serial.println(GlobalKof);
+        Serial.print(GlobalKof);
+	Serial.println();
 }
 
 bool controller::CheckController(void) // checking controller
