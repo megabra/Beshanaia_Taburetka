@@ -20,6 +20,7 @@ private:
 	int lx;
 	int ry;
 	int rx;
+	int r2;
 	double KofL1R2 = 0;
 	double KofL2R1 = 0;
 	double Rotate = 0;

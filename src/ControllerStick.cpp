@@ -17,13 +17,17 @@ void controller::SetInfo() // Set info
 	ly = deadzone(ps4.Stick(LY));
 	lx = deadzone(ps4.Stick(LX));
 	rx = deadzone(ps4.Stick(RX));
+	r2 = deadzone((ps4.Button(R2T)+128));
 	
 	/*--------------------For wheels--------------------*/
 	
-	#define MAX_STICK_VAL 128
-	#define	MAX_MOTOR_VAL 720
+	#define MAX_STICK_VAL 127.0
+	#define MAX_BUTTON_VAL 255.0
+	#define SPEED_MOD_MIN 150
+	#define SPEED_MOD_MAX 400
+	const double MAX_MOTOR_VAL = SPEED_MOD_MIN + ((r2 / MAX_BUTTON_VAL) * (SPEED_MOD_MAX - SPEED_MOD_MIN));
 
-	double hypo = sqrt((lx*lx)+(ly*ly));
+	double hypo = sqrt((lx*lx)+(ly*ly)) + abs(rx);
 	hypo = (hypo > MAX_STICK_VAL) ? MAX_STICK_VAL : hypo;
 
 	GlobalKof = hypo / MAX_STICK_VAL * MAX_MOTOR_VAL;
@@ -67,7 +71,7 @@ void controller::SetInfo() // Set info
 
 void controller::GetInfo() // print info
 {
-	Serial.print("LX  =  ");
+	Serial.print("\tLX  =  ");
 	Serial.print(lx);
 	Serial.print("\tLY  =  ");
 	Serial.print(ly);
@@ -75,6 +79,10 @@ void controller::GetInfo() // print info
 	Serial.print(rx);
 	//Serial.print("\tRY  =  ");
 	//Serial.print(ry);
+	Serial.print("\tR2  =  ");
+	Serial.print(r2);
+	//Serial.print("\rMMV  =  ");
+	//Serial.print(MAX_MOTOR_VAL);
 	Serial.print("\tML1  =  ");
         Serial.print(ML1);
         Serial.print("\tML2  =  ");
@@ -83,14 +91,14 @@ void controller::GetInfo() // print info
         Serial.print(MR1);
         Serial.print("\tMR2  =  ");
         Serial.print(MR2);
-	Serial.print("\tK1  =  ");
-        Serial.print(KofL1R2);
-        Serial.print("\tK2  =  ");
-        Serial.print(KofL2R1);
-	Serial.print("\tRT  =  ");
-	Serial.print(Rotate);
-        Serial.print("\tGK  =  ");
-        Serial.print(GlobalKof);
+	//Serial.print("\tK1  =  ");
+        //Serial.print(KofL1R2);
+        //Serial.print("\tK2  =  ");
+        //Serial.print(KofL2R1);
+	//Serial.print("\tRT  =  ");
+	//Serial.print(Rotate);
+        //Serial.print("\tGK  =  ");
+        //Serial.print(GlobalKof);
 	Serial.println();
 }
 
