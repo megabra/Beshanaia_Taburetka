@@ -39,8 +39,8 @@ void controller::SetInfo() // Set info
 
         if (hypo != 0)
         {
-        	double sin2 = ((ly / hypo)>=0) ? (ly / hypo)*(ly / hypo) : (ly / hypo)*(ly / hypo)*-1;
-        	double cos2 = ((lx / hypo)>=0) ? (lx / hypo)*(lx / hypo) : (lx / hypo)*(lx / hypo)*-1;
+        	double sin2 = abs((ly / hypo))*(ly / hypo);
+        	double cos2 = abs((lx / hypo))*(lx / hypo);
 
         	KofL1R2 =sin2+cos2;
         	KofL2R1 =sin2-cos2;
