@@ -7,7 +7,7 @@ SoftwareSerial mySerial(rx, tx);
 
 void UltraDigit::UartInit(void)
 {
-	mySerial.begin(9600);
+	mySerial.begin(115200);
 }
 
 unsigned short UltraDigit::ReadInfo(void)

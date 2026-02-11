@@ -4,7 +4,7 @@
 #include <PRIZM.h> // tetrix 
 #include "include/ControllerStick.h"
 #include "include/Auto1.h"
-#include "include/UartRead.h"
+//#include "include/UartRead.h"
 
 PRIZM prizm;
 EXPANSION exc;
@@ -19,8 +19,8 @@ void setup()
   while (!Serial) {}
   Serial.println("Start");
 
-  UltraDigit::UartInit(); //initialization uart
-
+ // UltraDigit::UartInit(); //initialization uart
+  
   prizm.PrizmBegin();
 }
 
@@ -29,19 +29,29 @@ void loop()
   if (dsh.CheckController() && CheckVoltage())
   {
     dsh.SetInfo(); //set controller info
-    if (Serial)
+    if (0)
     {
       Serial.print("V  =  ");
       Serial.print(prizm.readBatteryVoltage());
-      Serial.print("\tD1  =  ");
-      Serial.print(UltraDigit::ReadInfo());
+      //Serial.print("\tD1  =  ");
+      //Serial.print(UltraDigit::ReadInfo());
+      //Serial.print("\tD2  =  ");
+      //Serial.print(UltraDigit::ReadInfo());
+      Serial.print("\tEL1  =  ");
+        Serial.print(exc.readEncoderCount(1, 1));
+        Serial.print("\tEL2  =  ");
+        Serial.print(exc.readEncoderCount(1, 2));
+        Serial.print("\tER1  =  ");
+        Serial.print(exc.readEncoderCount(3, 1));
+        Serial.print("\tER2  =  ");
+        Serial.print(exc.readEncoderCount(3, 2));
       dsh.GetInfo(); //print controller info
     }
 
 
-    exc.setMotorSpeeds(3, (dsh.ML1 * -1), (dsh.ML2 * -1)); 
+    exc.setMotorSpeeds(3, (dsh.ML2 * -1), (dsh.ML1 * -1)); 
     exc.setMotorSpeeds(1, (dsh.MR1 * -1), (dsh.MR2 * -1));
-    //exc.setMotorPowers(3, (dsh.ML1 * -1), (dsh.ML2 * -1)); 
+    //exc.setMotorPowers(3, (dsh.ML2 * -1), (dsh.ML1 * -1)); 
     //exc.setMotorPowers(1, (dsh.MR1 * -1), (dsh.MR2 * -1));
     
   }
