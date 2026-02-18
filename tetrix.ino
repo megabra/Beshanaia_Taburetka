@@ -4,7 +4,7 @@
 #include <PRIZM.h> // tetrix 
 #include "include/ControllerStick.h"
 #include "include/Auto1.h"
-//#include "include/UartRead.h"
+#include "include/UartRead.h"
 
 PRIZM prizm;
 EXPANSION exc;
@@ -13,13 +13,17 @@ controller dsh;
 
 bool CheckVoltage(void);
 
+ int var1;
+  int var2;
+  float var3;
+
 void setup()
 {
   Serial.begin(250000);
   while (!Serial) {}
   Serial.println("Start");
 
- // UltraDigit::UartInit(); //initialization uart
+  UltraDigit::UartInit(); //initialization uart
   
   prizm.PrizmBegin();
 }
@@ -38,18 +42,25 @@ void loop()
       //Serial.print("\tD2  =  ");
       //Serial.print(UltraDigit::ReadInfo());
       Serial.print("\tEL1  =  ");
-        Serial.print(exc.readEncoderCount(1, 1));
-        Serial.print("\tEL2  =  ");
-        Serial.print(exc.readEncoderCount(1, 2));
-        Serial.print("\tER1  =  ");
-        Serial.print(exc.readEncoderCount(3, 1));
-        Serial.print("\tER2  =  ");
-        Serial.print(exc.readEncoderCount(3, 2));
-      dsh.GetInfo(); //print controller info
+      Serial.print(exc.readEncoderCount(1, 1));
+      Serial.print("\tEL2  =  ");
+      Serial.print(exc.readEncoderCount(1, 2));
+      Serial.print("\tER1  =  ");
+      Serial.print(exc.readEncoderCount(2, 1));
+      Serial.print("\tER2  =  ");
+      Serial.print(exc.readEncoderCount(2, 2));
+      //dsh.GetInfo(); //print controller info
+      UltraDigit::ReadInfo(var1, var2, var3);
+      Serial.print("\tV1  =  ");
+      Serial.print(var1);
+      Serial.print("\tV2  =  ");
+      Serial.print(var2);
+      Serial.print("\tV3  =  ");
+      Serial.println(var3);
     }
 
 
-    exc.setMotorSpeeds(3, (dsh.ML2 * -1), (dsh.ML1 * -1)); 
+    exc.setMotorSpeeds(2, (dsh.ML2 * -1), (dsh.ML1 * -1)); 
     exc.setMotorSpeeds(1, (dsh.MR1 * -1), (dsh.MR2 * -1));
     //exc.setMotorPowers(3, (dsh.ML2 * -1), (dsh.ML1 * -1)); 
     //exc.setMotorPowers(1, (dsh.MR1 * -1), (dsh.MR2 * -1));
@@ -57,7 +68,7 @@ void loop()
   }
   else
   {
-    exc.setMotorSpeeds(3, 0, 0);
+    exc.setMotorSpeeds(2, 0, 0);
     exc.setMotorSpeeds(1, 0, 0);
     
     //exc.setMotorPowers(3, 0, 0);

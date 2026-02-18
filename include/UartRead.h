@@ -5,7 +5,6 @@
 
 namespace UltraDigit
 {
-	bool checking(void);
-	unsigned short ReadInfo(void);
-	void UartInit (void);
+	void ReadInfo(int &var1, int &var2, float &var3);
+	void UartInit(void);
 }

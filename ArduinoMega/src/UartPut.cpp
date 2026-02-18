@@ -1,20 +1,23 @@
 #include "../include/UartPut.h"
 
-const uint8_t rx = 19;
-const uint8_t tx = 18;
+const uint8_t RX = 17;
+const uint8_t TX = 16;
 
-SoftwareSerial mySerial(rx, tx);
+SoftwareSerial mySerial(RX, TX);
 
 void UltraDigit::UartInit(void)
 {
 	mySerial.begin(9600);
 }
 
-void UltraDigit::PutInfo(unsigned short val)
+void UltraDigit::PutInfo(bool var1, bool var2, float var3)
 {
-	uint8_t buf1 = val / 255;
-	uint8_t buf2 = val % 255;
-	
-	mySerial.write(buf1);
-	mySerial.write(buf2);
+	mySerial.write(int(var1));
+	mySerial.write(int(var2));
+	  
+	byte* floatBytes = (byte*) &var3;
+	for(int i = 0; i < sizeof(float); i++) {
+	mySerial.write(floatBytes[i]);
+        }
+
 }
