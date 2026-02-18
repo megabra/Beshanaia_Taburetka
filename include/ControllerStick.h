@@ -14,15 +14,18 @@ public:
 	int ML2;
 	int MR1;
 	int MR2;
+	int MG;
 private:
+	void SetWheels(int ly, int lx, int rx, int r2, float &KofL1R2, float &KofL2R1, float &Rotate, float &GlobalKof);
+	void SetGraber(int ly, int r2, float &GloabalKof);
 	int deadzone(int val);
 	int ly;
 	int lx;
-	int ry;
+	//int ry;
 	int rx;
 	int r2;
-	double KofL1R2 = 0;
-	double KofL2R1 = 0;
-	double Rotate = 0;
-	double GlobalKof = 0;
+	float KofL1R2 = 0;
+	float KofL2R1 = 0;
+	float Rotate = 0;
+	float GlobalKof = 0;
 };

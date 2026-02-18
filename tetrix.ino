@@ -62,6 +62,7 @@ void loop()
 
     exc.setMotorSpeeds(2, (dsh.ML2 * -1), (dsh.ML1 * -1)); 
     exc.setMotorSpeeds(1, (dsh.MR1 * -1), (dsh.MR2 * -1));
+    exc.setMotorSpeeds(3, dsh.MG, dsh.MG);
     //exc.setMotorPowers(3, (dsh.ML2 * -1), (dsh.ML1 * -1)); 
     //exc.setMotorPowers(1, (dsh.MR1 * -1), (dsh.MR2 * -1));
     
@@ -70,6 +71,7 @@ void loop()
   {
     exc.setMotorSpeeds(2, 0, 0);
     exc.setMotorSpeeds(1, 0, 0);
+    exc.setMotorSpeeds(3, 0, 0);
     
     //exc.setMotorPowers(3, 0, 0);
     //exc.setMotorPowers(1, 0, 0);
