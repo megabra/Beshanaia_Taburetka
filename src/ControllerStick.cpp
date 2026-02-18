@@ -12,62 +12,90 @@ int controller::deadzone(int val) // deadzone for controller
 		return 0;
 }
 
-void controller::SetInfo() // Set info
+void controller::SetGraber(int ly, int r2, float &GlobalKof)
 {
-	ly = deadzone(ps4.Stick(LY));
-	lx = deadzone(ps4.Stick(LX));
-	rx = deadzone(ps4.Stick(RX));
-	r2 = deadzone((ps4.Button(R2T)+128));
-
-	/*--------------------For wheels--------------------*/
-	
 	#define MAX_STICK_VAL 127.0
 	#define MAX_BUTTON_VAL 255.0
 	#define SPEED_MOD_MIN 250
 	#define SPEED_MOD_MAX 600
-	const double MAX_MOTOR_VAL = SPEED_MOD_MIN + ((r2 / MAX_BUTTON_VAL) * (SPEED_MOD_MAX - SPEED_MOD_MIN));
 
-	double hypo = sqrt((lx*lx)+(ly*ly)) + abs(rx);
-	hypo = (hypo > MAX_STICK_VAL) ? MAX_STICK_VAL : hypo;
+	float MAX_MOTOR_VAL = SPEED_MOD_MIN + ((r2 / MAX_BUTTON_VAL) * (SPEED_MOD_MAX - SPEED_MOD_MIN));
+	
+	lx = abs(lx);
+	lx = (lx > MAX_STICK_VAL) ? MAX_STICK_VAL : lx;
 
-	GlobalKof = hypo / MAX_STICK_VAL * MAX_MOTOR_VAL;
+	GlobalKof = MG = lx / MAX_STICK_VAL * MAX_MOTOR_VAL;
+}
 
-	Rotate = rx / MAX_STICK_VAL;
-	Rotate = (Rotate > 1) ? 1 : (Rotate < -1) ? -1 : Rotate;
+void controller::SetWheels(int ly, int lx, int rx, int r2, float &KofL1R2, float &KofL2R1, float &Rotate, float &GlobalKof)
+{
+	#define MAX_STICK_VAL 127.0
+        #define MAX_BUTTON_VAL 255.0
+        #define SPEED_MOD_MIN 250
+        #define SPEED_MOD_MAX 600
+        float MAX_MOTOR_VAL = SPEED_MOD_MIN + ((r2 / MAX_BUTTON_VAL) * (SPEED_MOD_MAX - SPEED_MOD_MIN));
 
-	KofL1R2 = KofL2R1 = 0;
+        float hypo = sqrt((lx*lx)+(ly*ly)) + abs(rx);
+        hypo = (hypo > MAX_STICK_VAL) ? MAX_STICK_VAL : hypo;
+
+        GlobalKof = hypo / MAX_STICK_VAL * MAX_MOTOR_VAL;
+
+        Rotate = rx / MAX_STICK_VAL;
+        Rotate = (Rotate > 1) ? 1 : (Rotate < -1) ? -1 : Rotate;
+
+        KofL1R2 = KofL2R1 = 0;
 
         if (hypo != 0)
         {
-        	double sin2 = abs((ly / hypo))*(ly / hypo);
-        	double cos2 = abs((lx / hypo))*(lx / hypo);
+                float sin2 = abs((ly / hypo))*(ly / hypo);
+                float cos2 = abs((lx / hypo))*(lx / hypo);
 
-        	KofL1R2 =sin2+cos2;
-        	KofL2R1 =sin2-cos2;
+                KofL1R2 =sin2+cos2;
+                KofL2R1 =sin2-cos2;
         }
 
-        	int RawL1 = (KofL1R2 + Rotate) * GlobalKof;
-        	int RawR2 = (KofL1R2 - Rotate) * GlobalKof;
-        	int RawL2 = (KofL2R1 + Rotate) * GlobalKof;
-        	int RawR1 = (KofL2R1 - Rotate) * GlobalKof;
+                int RawL1 = (KofL1R2 + Rotate) * GlobalKof;
+                int RawR2 = (KofL1R2 - Rotate) * GlobalKof;
+                int RawL2 = (KofL2R1 + Rotate) * GlobalKof;
+                int RawR1 = (KofL2R1 - Rotate) * GlobalKof;
 
-        	ML1 = (RawL1 > MAX_MOTOR_VAL) ? MAX_MOTOR_VAL : (RawL1 < -MAX_MOTOR_VAL) ? -MAX_MOTOR_VAL : RawL1;
-        	MR2 = (RawR2 > MAX_MOTOR_VAL) ? MAX_MOTOR_VAL : (RawR2 < -MAX_MOTOR_VAL) ? -MAX_MOTOR_VAL : RawR2;
-        	ML2 = (RawL2 > MAX_MOTOR_VAL) ? MAX_MOTOR_VAL : (RawL2 < -MAX_MOTOR_VAL) ? -MAX_MOTOR_VAL : RawL2;
-        	MR1 = (RawR1 > MAX_MOTOR_VAL) ? MAX_MOTOR_VAL : (RawR1 < -MAX_MOTOR_VAL) ? -MAX_MOTOR_VAL : RawR1;
+                ML1 = (RawL1 > MAX_MOTOR_VAL) ? MAX_MOTOR_VAL : (RawL1 < -MAX_MOTOR_VAL) ? -MAX_MOTOR_VAL : RawL1;
+                MR2 = (RawR2 > MAX_MOTOR_VAL) ? MAX_MOTOR_VAL : (RawR2 < -MAX_MOTOR_VAL) ? -MAX_MOTOR_VAL : RawR2;
+                ML2 = (RawL2 > MAX_MOTOR_VAL) ? MAX_MOTOR_VAL : (RawL2 < -MAX_MOTOR_VAL) ? -MAX_MOTOR_VAL : RawL2;
+                MR1 = (RawR1 > MAX_MOTOR_VAL) ? MAX_MOTOR_VAL : (RawR1 < -MAX_MOTOR_VAL) ? -MAX_MOTOR_VAL : RawR1;
 
-        	if(hypo == 0 && Rotate == 0)
-        		ML1 = ML2 = MR1 = MR2 = 0;
+                if(hypo == 0 && Rotate == 0)
+                        ML1 = ML2 = MR1 = MR2 = 0;
 
-	/*
-	m = MAX_MOTOR_VAL
-	k = KOF_OF_THE_SPEED = sqrt(lx^2+ly^2)/MAX_STICK_VAL*m
-	L1 = min(max((sin(x)*|sin(x)|+cos(x)*|cos(x)|+rx)*k,-m),m)
-	L2 = min(max((sin(x)*|sin(x)|-cos(x)*|cos(x)|+rx)*k,-m),m)
-	R1 = min(max((sin(x)*|sin(x)|-cos(x)*|cos(x)|-rx)*k,-m),m)
-	R2 = min(max((s
+        /*
+        m = MAX_MOTOR_VAL
+        k = KOF_OF_THE_SPEED = sqrt(lx^2+ly^2)/MAX_STICK_VAL*m
+        L1 = min(max((sin(x)*|sin(x)|+cos(x)*|cos(x)|+rx)*k,-m),m)
+        L2 = min(max((sin(x)*|sin(x)|-cos(x)*|cos(x)|+rx)*k,-m),m)
+        R1 = min(max((sin(x)*|sin(x)|-cos(x)*|cos(x)|-rx)*k,-m),m)
+        R2 = min(max((s
 in(x)*|sin(x)|+cos(x)*|cos(x)|-rx)*k,-m),m)
-	*/
+        */
+}
+
+void controller::SetInfo() // Set info
+{
+	ly = deadzone(ps4.Stick(LY));
+
+	if (ps4.Button(R1)){
+		ML1 = ML2 = MR1 = MR2 = KofL1R2 = KofL2R1 = Rotate = 0;
+		
+		SetGraber(ly, r2, GlobalKof);
+	}
+	else{
+		MG = 0;
+
+		lx = deadzone(ps4.Stick(LX));
+		rx = deadzone(ps4.Stick(RX));
+		r2 = deadzone((ps4.Button(R2T)+128));
+		
+		SetWheels(ly, lx, rx, r2, KofL1R2, KofL2R1, Rotate, GlobalKof);
+	}
 }
 
 void controller::GetInfo() // print info
