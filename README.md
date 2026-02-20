@@ -1,5 +1,8 @@
 # TRIKANDSH Robotics Team - Pedestrian Crosswalk Robot
 
+## social medias
+telegramm: https://t.me/TRIKandSH
+
 This project is being developed by the robotics team **TRIKANDSH** for a robot that will deploy a pedestrian crosswalk.
 
 ## Author
