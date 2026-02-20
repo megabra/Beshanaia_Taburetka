@@ -1,9 +1,10 @@
 
-#include "../include/ControllerStick.h"
+#include "../include/Controller.h"
 
 PS4 ps4;
 
-int controller::deadzone(int val) // deadzone for controller
+// deadzone for controller
+int controller::deadzone(int val) 
 {
 	const uint8_t zone = 20;
 	if (val <= (128 - zone) || val >= (128 + zone))
@@ -12,27 +13,29 @@ int controller::deadzone(int val) // deadzone for controller
 		return 0;
 }
 
-void controller::SetGraber(int ly, int r2, float &GlobalKof)
+// Set grabber motors speed
+void controller::SetGraber(int ly, int r2, float &GlobalKof) 
 {
 	#define MAX_STICK_VAL 127.0
 	#define MAX_BUTTON_VAL 255.0
-	#define SPEED_MOD_MIN 250
-	#define SPEED_MOD_MAX 600
+	#define SPEED_MOD_MIN 50 // minimal val of max stick val 
+	#define SPEED_MOD_MAX 180 // maximal val of max stick val
 
 	float MAX_MOTOR_VAL = SPEED_MOD_MIN + ((r2 / MAX_BUTTON_VAL) * (SPEED_MOD_MAX - SPEED_MOD_MIN));
 	
-	lx = abs(lx);
-	lx = (lx > MAX_STICK_VAL) ? MAX_STICK_VAL : lx;
+	ly = (ly > MAX_STICK_VAL) ? MAX_STICK_VAL : ly;
+	ly = (ly < (MAX_STICK_VAL * -1)) ? (MAX_STICK_VAL * -1) : ly;
 
-	GlobalKof = MG = lx / MAX_STICK_VAL * MAX_MOTOR_VAL;
+	GlobalKof = MG = ly / MAX_STICK_VAL * MAX_MOTOR_VAL;
 }
 
+// Set wheels motors speed
 void controller::SetWheels(int ly, int lx, int rx, int r2, float &KofL1R2, float &KofL2R1, float &Rotate, float &GlobalKof)
 {
 	#define MAX_STICK_VAL 127.0
         #define MAX_BUTTON_VAL 255.0
-        #define SPEED_MOD_MIN 250
-        #define SPEED_MOD_MAX 600
+        #define SPEED_MOD_MIN 100 // minimal val of max stick val
+        #define SPEED_MOD_MAX 600 // maximal val of max stick val
         float MAX_MOTOR_VAL = SPEED_MOD_MIN + ((r2 / MAX_BUTTON_VAL) * (SPEED_MOD_MAX - SPEED_MOD_MIN));
 
         float hypo = sqrt((lx*lx)+(ly*ly)) + abs(rx);
@@ -68,17 +71,18 @@ void controller::SetWheels(int ly, int lx, int rx, int r2, float &KofL1R2, float
                         ML1 = ML2 = MR1 = MR2 = 0;
 
         /*
+		Formul:
         m = MAX_MOTOR_VAL
         k = KOF_OF_THE_SPEED = sqrt(lx^2+ly^2)/MAX_STICK_VAL*m
         L1 = min(max((sin(x)*|sin(x)|+cos(x)*|cos(x)|+rx)*k,-m),m)
         L2 = min(max((sin(x)*|sin(x)|-cos(x)*|cos(x)|+rx)*k,-m),m)
         R1 = min(max((sin(x)*|sin(x)|-cos(x)*|cos(x)|-rx)*k,-m),m)
-        R2 = min(max((s
-in(x)*|sin(x)|+cos(x)*|cos(x)|-rx)*k,-m),m)
+        R2 = min(max((sin(x)*|sin(x)|+cos(x)*|cos(x)|-rx)*k,-m),m)
         */
 }
 
-void controller::SetInfo() // Set info
+// Set info
+void controller::SetInfo() 
 {
 	ly = deadzone(ps4.Stick(LY));
 
@@ -98,12 +102,18 @@ void controller::SetInfo() // Set info
 	}
 }
 
-void controller::GetInfo() // print info
+/*
+	WARRING: its a not a finiished wersion of print info
+	for ATmel328 it will be too long to doing this
+	but it is only for developers, so we'll not going to impruve it (for now)
+*/
+// print info
+void controller::GetInfo()
 {
 	//Serial.print("\tLX  =  ");
 	//Serial.print(lx);
-	//Serial.print("\tLY  =  ");
-	//Serial.print(ly);
+	Serial.print("\tLY  =  ");
+	Serial.print(ly);
 	//Serial.print("\tRX  =  ");
 	//Serial.print(rx);
 	//Serial.print("\tRY  =  ");
@@ -113,25 +123,28 @@ void controller::GetInfo() // print info
 	//Serial.print("\rMMV  =  ");
 	//Serial.print(MAX_MOTOR_VAL);
 	Serial.print("\tML1  =  ");
-        Serial.print(ML1);
-        Serial.print("\tML2  =  ");
-        Serial.print(ML2);
-        Serial.print("\tMR1  =  ");
-        Serial.print(MR1);
-        Serial.print("\tMR2  =  ");
-        Serial.print(MR2);
+    Serial.print(ML1);
+    Serial.print("\tML2  =  ");
+    Serial.print(ML2);
+    Serial.print("\tMR1  =  ");
+    Serial.print(MR1);
+    Serial.print("\tMR2  =  ");
+    Serial.print(MR2);
 	//Serial.print("\tK1  =  ");
-        //Serial.print(KofL1R2);
-        //Serial.print("\tK2  =  ");
-        //Serial.print(KofL2R1);
+    //Serial.print(KofL1R2);
+    //Serial.print("\tK2  =  ");
+    //Serial.print(KofL2R1);
 	//Serial.print("\tRT  =  ");
 	//Serial.print(Rotate);
-        //Serial.print("\tGK  =  ");
-        //Serial.print(GlobalKof);
+    Serial.print("\tGK  =  ");
+    Serial.print(GlobalKof);
+	Serial.print("\tr1  =  ");
+	Serial.print(ps4.Button(R1));
 	Serial.println();
 }
 
-bool controller::CheckController(void) // checking controller
+// checking controller
+bool controller::CheckController(void)
 {
 	ps4.getPS4();
 	if (ps4.Connected)
