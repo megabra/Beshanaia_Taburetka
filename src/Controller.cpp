@@ -3,6 +3,13 @@
 
 PS4 ps4;
 
+#define MAX_STICK_VAL 127.0
+#define MAX_BUTTON_VAL 255.0
+#define SPEED_MOD_MIN 175 // minimal val of max stick val
+#define SPEED_MOD_MAX 450 // maximal val of max stick val
+#define SPEED_MOD_MIN_S 100 // minimal val of max stick val
+#define SPEED_MOD_MAX_S 180 // maximal val of max stick val
+
 // deadzone for controller
 int controller::deadzone(int val) 
 {
@@ -16,12 +23,8 @@ int controller::deadzone(int val)
 // Set grabber motors speed
 void controller::SetGraber(int ly, int r2, float &GlobalKof) 
 {
-	#define MAX_STICK_VAL 127.0
-	#define MAX_BUTTON_VAL 255.0
-	#define SPEED_MOD_MIN 50 // minimal val of max stick val 
-	#define SPEED_MOD_MAX 180 // maximal val of max stick val
 
-	float MAX_MOTOR_VAL = SPEED_MOD_MIN + ((r2 / MAX_BUTTON_VAL) * (SPEED_MOD_MAX - SPEED_MOD_MIN));
+	float MAX_MOTOR_VAL = SPEED_MOD_MIN_S + ((r2 / MAX_BUTTON_VAL) * (SPEED_MOD_MAX_S - SPEED_MOD_MIN_S));
 	
 	ly = (ly > MAX_STICK_VAL) ? MAX_STICK_VAL : ly;
 	ly = (ly < (MAX_STICK_VAL * -1)) ? (MAX_STICK_VAL * -1) : ly;
@@ -32,10 +35,7 @@ void controller::SetGraber(int ly, int r2, float &GlobalKof)
 // Set wheels motors speed
 void controller::SetWheels(int ly, int lx, int rx, int r2, float &KofL1R2, float &KofL2R1, float &Rotate, float &GlobalKof)
 {
-	#define MAX_STICK_VAL 127.0
-        #define MAX_BUTTON_VAL 255.0
-        #define SPEED_MOD_MIN 100 // minimal val of max stick val
-        #define SPEED_MOD_MAX 600 // maximal val of max stick val
+	lx *= -1;
         float MAX_MOTOR_VAL = SPEED_MOD_MIN + ((r2 / MAX_BUTTON_VAL) * (SPEED_MOD_MAX - SPEED_MOD_MIN));
 
         float hypo = sqrt((lx*lx)+(ly*ly)) + abs(rx);
@@ -67,8 +67,8 @@ void controller::SetWheels(int ly, int lx, int rx, int r2, float &KofL1R2, float
                 ML2 = (RawL2 > MAX_MOTOR_VAL) ? MAX_MOTOR_VAL : (RawL2 < -MAX_MOTOR_VAL) ? -MAX_MOTOR_VAL : RawL2;
                 MR1 = (RawR1 > MAX_MOTOR_VAL) ? MAX_MOTOR_VAL : (RawR1 < -MAX_MOTOR_VAL) ? -MAX_MOTOR_VAL : RawR1;
 
-                if(hypo == 0 && Rotate == 0)
-                        ML1 = ML2 = MR1 = MR2 = 0;
+        if(hypo == 0 && Rotate == 0)
+                ML1 = ML2 = MR1 = MR2 = 0;
 
         /*
 		Formul:
@@ -84,6 +84,12 @@ void controller::SetWheels(int ly, int lx, int rx, int r2, float &KofL1R2, float
 // Set info
 void controller::SetInfo() 
 {
+	BX = ps4.Button(CROSS);
+	BO = ps4.Button(CIRCLE);
+	BL1 = ps4.Button(L1);
+	BPawStateUp();
+	BPawStateDown();
+
 	ly = deadzone(ps4.Stick(LY));
 
 	if (ps4.Button(R1)){
@@ -155,4 +161,23 @@ bool controller::CheckController(void)
 		Serial.println("ERROR - controller doesn't conected");
 		return 0;
 	}
+}
+
+void controller::BPawStateUp(void)
+{
+	if (LastBup && !ps4.Button(UP)) {
+		if (RPState < 2)
+			RPState++;
+    	}
+	LastBup = ps4.Button(UP);
+}
+
+void controller::BPawStateDown(void)
+{
+	if (LastBdown && !ps4.Button(DOWN)) {
+                if (RPState > 0)
+                        RPState--;
+        }
+        LastBdown = ps4.Button(DOWN);
+	
 }
